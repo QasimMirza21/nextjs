@@ -11,7 +11,7 @@ const Index = ({ pets }: Props) => {
   return (
     <>
       {pets.map((pet) => (
-        <div key={pet._id}>
+        <div key={pet._id as string}>
           <div className="card">
             <img src={pet.image_url} />
             <h5 className="pet-name">{pet.name}</h5>
