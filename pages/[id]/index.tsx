@@ -14,16 +14,17 @@ type Props = {
   pet: Pets;
 };
 
-/* Allows you to view pet card info and delete pet card*/
+/* Allows you to view pet card info and delete pet card */
 const PetPage = ({ pet }: Props) => {
   const router = useRouter();
   const [message, setMessage] = useState("");
+
   const handleDelete = async () => {
     const petID = router.query.id;
 
     try {
       await fetch(`/api/pets/${petID}`, {
-        method: "Delete",
+        method: "DELETE",
       });
       router.push("/");
     } catch (error) {
@@ -31,8 +32,10 @@ const PetPage = ({ pet }: Props) => {
     }
   };
 
+  const id = pet._id as string;
+
   return (
-    <div key={pet._id as string}>
+    <div key={id}>
       <div className="card">
         <img src={pet.image_url} />
         <h5 className="pet-name">{pet.name}</h5>
@@ -40,26 +43,26 @@ const PetPage = ({ pet }: Props) => {
           <p className="pet-name">{pet.name}</p>
           <p className="owner">Owner: {pet.owner_name}</p>
 
-          {/* Extra Pet Info: Likes and Dislikes */}
           <div className="likes info">
             <p className="label">Likes</p>
             <ul>
-              {pet.likes.map((data, index) => (
-                <li key={index}>{data} </li>
+              {pet.likes?.map((data, index) => (
+                <li key={index}>{data}</li>
               ))}
             </ul>
           </div>
+
           <div className="dislikes info">
             <p className="label">Dislikes</p>
             <ul>
-              {pet.dislikes.map((data, index) => (
-                <li key={index}>{data} </li>
+              {pet.dislikes?.map((data, index) => (
+                <li key={index}>{data}</li>
               ))}
             </ul>
           </div>
 
           <div className="btn-container">
-            <Link href={`/${pet._id}/edit`}>
+            <Link href={{ pathname: "/[id]/edit", query: { id } }}>
               <button className="btn edit">Edit</button>
             </Link>
             <button className="btn delete" onClick={handleDelete}>
@@ -92,8 +95,7 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async ({
     };
   }
 
-  /* Ensures all objectIds and nested objectIds are serialized as JSON data */
-  const serializedPet = JSON.parse(JSON.stringify(pet));
+  const serializedPet: Pets = JSON.parse(JSON.stringify(pet));
 
   return {
     props: {
